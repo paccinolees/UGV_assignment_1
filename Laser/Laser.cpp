@@ -189,4 +189,5 @@ Laser::~Laser()
 	Stream->Close();
 	Client->Close();
 	delete ProcessManagementData;
+	delete SensorData;
 }

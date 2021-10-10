@@ -65,7 +65,6 @@ int main() {
 	}
 
 	std::cout << "Laser process terminating..." << std::endl;
-	myLaserObj.~Laser(); //destructor
 	//NOTE TO SELF: DONT FORGET TO CHANGE SOLUTION'S PROPERTY'S CONFIG. PROP. and change to 'release' & 'x64' to avoid crashes.
 	return 0;
 }
