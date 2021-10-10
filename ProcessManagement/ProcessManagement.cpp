@@ -155,7 +155,7 @@ int main() {
 		}
 
 		//Shutdown routine (kbhit or critical processes failed)
-		if (_kbhit() || LaserCounter > max_waitCount /* || CameraCounter > max_waitCount || VehicleControlCounter > max_waitCount*/) {
+		if (_kbhit()  /*|| LaserCounter > max_waitCount || CameraCounter > max_waitCount || VehicleControlCounter > max_waitCount */ ) {
 			PMptr->Shutdown.Status = 0xFF;
 			std::cout << "SHUTDOWN routine activated by kbhit/failure of critical processes" << std::endl;
 		}
