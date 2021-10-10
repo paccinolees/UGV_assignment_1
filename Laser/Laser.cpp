@@ -45,10 +45,6 @@ int Laser::connect(String^ hostName, int portNumber) // Establish TCP connection
 	std::cout << "9" << std::endl;
 	// Print the received string on the screen
 	Console::WriteLine(ResponseData); // should print 'OK'
-	if (ResponseData != "OK") {
-		Console::WriteLine("User not authorised");
-		PMptr->Shutdown.Flags.Laser = 1;
-	}
 
 	//------------------------------------------//
 
