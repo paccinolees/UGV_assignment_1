@@ -137,7 +137,7 @@ int main() {
 		else {
 			DisplayCounter += 1;
 		}
-		//CHANGE ATEMPt atemp2
+		
 		// Attempt to restart non-crit processes
 		if (GPSCounter > max_waitCount) {
 			std::cout << "GPS(non-crit.) failed, attempting restart..." << std::endl;
