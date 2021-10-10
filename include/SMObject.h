@@ -12,7 +12,7 @@ class SMObject
 	TCHAR *szName;
 	int Size;
 public:
-	void *pData;
+	void *pData; //pointer used to point at each shared memories when it is created and provided access, that is of no-type atm. We need to assign its type when we wanna use it
 	int SMCreateError;
 	int SMAccessError;
 public:

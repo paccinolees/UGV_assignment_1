@@ -15,7 +15,7 @@ public:
 	int connect(String^ hostName, int portNumber) override;
 	int setupSharedMemory() override;
 	int getData() override;
-	int checkData() override;
+	bool checkData() override;
 	int sendDataToSharedMemory() override;
 	bool getShutdownFlag() override;
 	int setHeartbeat(bool heartbeat) override;

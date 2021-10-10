@@ -1,5 +1,6 @@
 #include <zmq.hpp>
 #include <Windows.h>
+#include <iostream>
 
 #include "SMStructs.h"
 #include "SMFcn.h"
@@ -10,6 +11,18 @@
 #include <GL/glut.h>
 
 #include <turbojpeg.h>
+
+using namespace System::Threading;
+
+//counter for heartbeat detection 
+int PMCounter = 0;
+const int max_waitCount = 100;  //2.5sec
+
+// Instantiate SM Objects
+SMObject PMObj(_TEXT("ProcessManagement"), sizeof(ProcessManagement));
+
+// Allocate PM. pointer to pData
+ProcessManagement* PMptr;
 
 void display();
 void idle();
@@ -22,6 +35,21 @@ zmq::socket_t subscriber(context, ZMQ_SUB);
 
 int main(int argc, char** argv)
 {
+	// Give access to SM objects and check if there are errors
+	PMObj.SMAccess();
+	if (PMObj.SMAccessError) {
+		std::cout << "Shared memory access of PMObj failed" << std::endl;
+		std::cout << "Press any key to exit/continue..." << std::endl;
+		getch();
+		return -2;
+	}
+
+	PMptr = (ProcessManagement*)PMObj.pData;
+
+	// Initialize shutdown status
+	PMptr->Shutdown.Flags.Camera = 0;
+
+
 	//Define window size
 	const int WINDOW_WIDTH = 800;
 	const int WINDOW_HEIGHT = 600;
@@ -42,8 +70,8 @@ int main(int argc, char** argv)
 	subscriber.setsockopt(ZMQ_SUBSCRIBE, "", 0);
 
 	glutMainLoop();
-
-	return 1;
+	
+	return 0;
 }
 
 
@@ -65,6 +93,27 @@ void display()
 }
 void idle()
 {
+	// Changes its heartbeat to 1, if PM doesn't change it back to 0, add PMCounter
+	if (PMptr->Heartbeat.Flags.Camera == 0) {
+		PMptr->Heartbeat.Flags.Camera = 1;
+		PMCounter = 0;
+	}
+	else {
+		PMCounter += 1;
+
+		if (PMCounter > max_waitCount) {
+			std::cout << "PM failed, sending shutdown signal..." << std::endl;
+			PMptr->Shutdown.Status = 0xFF;
+		}
+	}
+
+	// Close the Display Module if shutdown flag is set
+	if (PMptr->Shutdown.Flags.Camera)
+	{
+		std::cout << "Camera process terminating..." << std::endl;
+		exit(1);
+	}
+
 
 	//receive from zmq
 	zmq::message_t update;
@@ -95,5 +144,7 @@ void idle()
 	}
 
 	display();
+
+	Thread::Sleep(25);
 }
 

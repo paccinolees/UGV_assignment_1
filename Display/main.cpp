@@ -38,6 +38,23 @@
 #include "Messages.hpp"
 #include "HUD.hpp"
 
+#include "SMStructs.h"
+#include "SMFcn.h"
+#include "SMObject.h"
+
+using namespace System::Threading;
+
+//counter for heartbeat detection 
+int PMCounter = 0;
+const int max_waitCount = 100;  //2.5sec
+
+// Instantiate SM Objects
+SMObject PMObj(_TEXT("ProcessManagement"), sizeof(ProcessManagement));
+
+// Allocate PM. pointer to pData
+ProcessManagement* PMptr;
+
+
 void display();
 void reshape(int width, int height);
 void idle();
@@ -66,6 +83,20 @@ double steering = 0;
 
 //int _tmain(int argc, _TCHAR* argv[]) {
 int main(int argc, char ** argv) {
+	// Give access to SM objects and check if there are errors
+	PMObj.SMAccess();
+	if (PMObj.SMAccessError) {
+		std::cout << "Shared memory access of PMObj failed" << std::endl;
+		std::cout << "Press any key to exit/continue..." << std::endl;
+		getch();
+		return -2;
+	}
+
+	PMptr = (ProcessManagement*)PMObj.pData;
+
+	// Initialize shutdown status
+	PMptr->Shutdown.Flags.OpenGL = 0;
+
 
 	const int WINDOW_WIDTH = 800;
 	const int WINDOW_HEIGHT = 600;
@@ -174,6 +205,27 @@ double getTime()
 }
 
 void idle() {
+	// Changes its heartbeat to 1, if PM doesn't change it back to 0, add PMCounter
+	if (PMptr->Heartbeat.Flags.OpenGL == 0) {
+		PMptr->Heartbeat.Flags.OpenGL = 1;
+		PMCounter = 0;
+	}
+	else {
+		PMCounter += 1;
+
+		if (PMCounter > max_waitCount) {
+			std::cout << "PM failed, sending shutdown signal..." << std::endl;
+			PMptr->Shutdown.Status = 0xFF;
+		}
+	}
+
+	// Close the Display Module if shutdown flag is set
+	if (PMptr->Shutdown.Flags.OpenGL)
+	{
+		std::cout << "Display process terminating..." << std::endl;
+		exit(1);
+	}
+
 
 	if (KeyManager::get()->isAsciiKeyPressed('a')) {
 		Camera::get()->strafeLeft();
@@ -234,6 +286,7 @@ void idle() {
 	}
 
 	display();
+	Thread::Sleep(25);
 
 #ifdef _WIN32 
 	Sleep(sleep_time_between_frames_in_seconds * 1000);

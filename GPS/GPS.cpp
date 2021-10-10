@@ -16,7 +16,7 @@ int GPS::getData()
 	// YOUR CODE HERE
 	return 1;
 }
-int GPS::checkData() 
+bool GPS::checkData() 
 {
 	// YOUR CODE HERE
 	return 1;
