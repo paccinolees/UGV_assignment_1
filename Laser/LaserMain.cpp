@@ -32,10 +32,7 @@ int main() {
 	// Initialize shutdown status
 	myLaserObj.setShutdownFlag(0);
 	// Connect to laser sensor(Authentication process)
-	std::cout << "BEFORE connect" << std::endl;
 	myLaserObj.connect("192.168.1.200", 23000);
-	std::cout << "AFTER connect" << std::endl;
-	Thread::Sleep(3000);
 
 	//-------------MAIN LOOP-------------//
 
@@ -57,15 +54,17 @@ int main() {
 		// Scan and output
 		myLaserObj.askForScan(); 
 		if (!myLaserObj.checkData()) { 
+			Console::WriteLine("continue");
 			continue; // skips the current scan and retry
 		}
+		
 		myLaserObj.getData(); // get calculated data and prints
 
 		Thread::Sleep(25);
 	}
 
 	std::cout << "Laser process terminating..." << std::endl;
-	//NOTE TO SELF: DONT FORGET TO CHANGE SOLUTION'S PROPERTY'S CONFIG. PROP. and change to 'release' & 'x64' to avoid crashes.
+
 	return 0;
 }
 

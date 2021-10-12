@@ -3,6 +3,7 @@
 #include <UGV_module.h>
 #include <smstructs.h>
 
+
 ref class Laser : public UGV_module //Laser class created by inheriting from 'UGV_module' class
 {
 

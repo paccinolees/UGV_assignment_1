@@ -23,7 +23,7 @@ void StartProcesses();
 //defining start up sequence
 TCHAR Units[10][20] = //
 {
-	TEXT("Laser.exe"),
+	TEXT("Laser1.exe"),
 	TEXT("Display.exe"),
 	TEXT("VehicleControl.exe"),
 	TEXT("GPS.exe"),
@@ -155,22 +155,22 @@ int main() {
 		}
 
 		//Shutdown routine (kbhit or critical processes failed)
-		if (_kbhit()  /*|| LaserCounter > max_waitCount || CameraCounter > max_waitCount || VehicleControlCounter > max_waitCount */ ) {
+		if (_kbhit()) {
 			PMptr->Shutdown.Status = 0xFF;
-			std::cout << "SHUTDOWN routine activated by kbhit/failure of critical processes" << std::endl;
+			std::cout << "SHUTDOWN routine activated by kbhit" << std::endl;
 		}
-		//added for debugging, DEL LATER
+		
 		if (LaserCounter > max_waitCount) {
 			PMptr->Shutdown.Status = 0xFF;
-			std::cout << "Laser failed...shutting down" << std::endl;
+			std::cout << "Laser failed...SHUTDOWN routine activated" << std::endl;
 		}
 		if (CameraCounter > max_waitCount) {
 			PMptr->Shutdown.Status = 0xFF;
-			std::cout << "Camera failed...shutting down" << std::endl;
+			std::cout << "Camera failed...SHUTDOWN routine activated" << std::endl;
 		}
 		if (VehicleControlCounter > max_waitCount) {
 			PMptr->Shutdown.Status = 0xFF;
-			std::cout << "VehicleControl failed...shutting down" << std::endl;
+			std::cout << "VehicleControl failed...SHUTDOWN routine activated" << std::endl;
 		}
 	
 	} 
