@@ -11,7 +11,9 @@ public:
 	int connect(String^ hostName, int portNumber) override;
 	int setupSharedMemory() override;
 	int askForScan() override;
+	int extractData() override;
 	int getData() override;
+	bool checkArrayLength() override;
 	bool checkData() override;
 	int sendDataToSharedMemory() override;
 	int setShutdownFlag(bool shutdown) override;
@@ -24,7 +26,6 @@ public:
 protected: //All added by me
 	SM_Laser* Laserptr;									// SM_Laser pointer						
 	array<String^>^ LaserDataArray = nullptr;			// Array of Laser data separated by ' '	
-	bool checkFlag;										// checkFlag for checkData() which checks for correct header and amount
 	double StartAngle;									// Start angle in degree
 	double Resolution;									// Angular step wideth in degree
 	int AmountOfRanges;									// Amount of range-values scanned

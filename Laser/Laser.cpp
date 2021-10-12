@@ -3,9 +3,6 @@
 #include "Laser.h"
 #include <math.h> // sin, cos, M_PI(pi)
 
-#include <iostream>
-#include <iomanip> //for decimal places
-
 
 int Laser::connect(String^ hostName, int portNumber) // Establish TCP connection
 {
@@ -101,13 +98,17 @@ int Laser::askForScan() // Ask server for scan
 
 	return 1;
 }
-int Laser::getData() // Get data from sensor (GPS / Laser) 
+int Laser::extractData() // Extract useful data from scan 
 {
 	// Extract key datas and convert to int32 to be used in calculations of X and Y
 	StartAngle = System::Convert::ToInt32(LaserDataArray[23], 16);
 	Resolution = System::Convert::ToInt32(LaserDataArray[24], 16) / 10000.0; //shud be 0.5 degree
 	AmountOfRanges = System::Convert::ToInt32(LaserDataArray[25], 16); //shud be 361
 
+	return 1;
+}
+int Laser::getData() // Get data from sensor  
+{
 	// Calculation of X and Y
 	Range = gcnew array<double>(AmountOfRanges);
 	RangeX = gcnew array<double>(AmountOfRanges); //See week5's slides for diagram of the co-ordinates wrt. the actual laser sensor
@@ -119,28 +120,39 @@ int Laser::getData() // Get data from sensor (GPS / Laser)
 		RangeX[i] = Range[i] * sin(i * Resolution * M_PI / 180.0);
 		RangeY[i] = -Range[i] * cos(i * Resolution * M_PI / 180.0);
 
-		// Save the calculated Datas in shared memory structures
-		Laserptr->x[i] = RangeX[i];
-		Laserptr->y[i] = RangeY[i];
-
-		//Print the received string on the screen
-		Console::WriteLine("#" + (i+1) + "			X: {0,10:F3} mm		Y: {1,10:F3} mm", RangeX[i], RangeY[i]);
+		//Print the calculated X and Y ranges in millimetres (3 decimal places)
+		Console::WriteLine("#" + (i + 1) + "			X: {0,10:F3} mm		Y: {1,10:F3} mm", RangeX[i], RangeY[i]);
 	}
-	
+
 	return 1;
 }
-bool Laser::checkData() // Check Data is correct (eg. headers and amount of data)
+bool Laser::checkArrayLength() // Check length of Data is correct
 {
-	checkFlag = 1;
+	checkLengthFlag = 1;
 	if (LaserDataArray->Length < 26) {
-		checkFlag = 0;
+		checkLengthFlag = 0;
 	}
 
-	return checkFlag;
+	return checkLengthFlag;
+}
+bool Laser::checkData() // Check Data is correct (eg. headers/amount of datas)
+{
+	checkDataFlag = 1;
+	//Console::WriteLine("Laser[0]: " + LaserDataArray[0]);
+	if (AmountOfRanges != 361) {
+		checkDataFlag = 0;
+	}
+
+	return checkDataFlag;
 }
 int Laser::sendDataToSharedMemory() // Save Data in shared memory structures
 {
-	// IMPLEMENTED UNDER getData()
+	for (int i = 0; i < AmountOfRanges; i++)
+	{
+		// Save the calculated Datas in shared memory structures
+		Laserptr->x[i] = RangeX[i];
+		Laserptr->y[i] = RangeY[i];
+	}
 
 	return 1;
 }

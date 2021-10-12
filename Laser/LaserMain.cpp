@@ -12,7 +12,7 @@
 #include "Laser.h"
 
 using namespace System;
-using namespace System::Net::Sockets; 
+using namespace System::Net::Sockets;
 using namespace System::Net; //For TcpClient
 using namespace System::Text; //For converting between bytes and ASCII 
 using namespace System::Threading;
@@ -25,7 +25,7 @@ const int max_waitCount = 100;  //2.5sec
 int main() {
 	// Create a Laser object
 	Laser myLaserObj;
-	
+
 	// Setup SM (Give access to SM objects and check if there are errors)
 	myLaserObj.setupSharedMemory();
 
@@ -51,14 +51,22 @@ int main() {
 			}
 		}
 
-		// Scan and output
-		myLaserObj.askForScan(); 
-		if (!myLaserObj.checkData()) { 
-			Console::WriteLine("continue");
+		// Scan and check its length
+		myLaserObj.askForScan();
+		if (!myLaserObj.checkArrayLength()) {
+			Console::WriteLine("skipping this scan...(Length check failed)");
+			continue; // skips the current scan and retry
+		}
+
+		// Extract key datas and check the data
+		myLaserObj.extractData();
+		if (!myLaserObj.checkData()) {
+			Console::WriteLine("skipping this scan...(Data check failed)");
 			continue; // skips the current scan and retry
 		}
 		
-		myLaserObj.getData(); // get calculated data and prints
+		myLaserObj.getData(); // get calculated X and Y datas and print
+		myLaserObj.sendDataToSharedMemory(); // send calculated X and Y datas to SM structure
 
 		Thread::Sleep(25);
 	}
@@ -67,4 +75,3 @@ int main() {
 
 	return 0;
 }
-
