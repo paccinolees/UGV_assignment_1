@@ -9,6 +9,7 @@
 #include "SMObject.h"
 #include "GPS.h"
 
+using namespace System;
 using namespace System::Threading;
 
 //counter for heartbeat detection 
@@ -17,39 +18,23 @@ const int max_waitCount = 100;  //2.5sec
 
 int main()
 {
-	// Instantiate SM Objects
-	SMObject PMObj(_TEXT("ProcessManagement"), sizeof(ProcessManagement));
-	SMObject GPSObj(_TEXT("GPS"), sizeof(SM_GPS));
+	// Create a GPS object
+	GPS myGPSObj;
 
-	// Give access to SM objects and check if there are errors
-	PMObj.SMAccess();
-	if (PMObj.SMAccessError) {
-		std::cout << "Shared memory access of PMObj failed" << std::endl;
-		std::cout << "Press any key to exit/continue..." << std::endl;
-		getch();
-		return -2;
-	}
-	GPSObj.SMAccess();
-	if (GPSObj.SMAccessError) {
-		std::cout << "Shared memory access of GPSObj failed" << std::endl;
-		std::cout << "Press any key to exit/continue..." << std::endl;
-		getch();
-		return -2;
-	}
-
-	// Allocate PM. pointer to pData
-	ProcessManagement* PMptr;
-	SM_GPS* GPSptr;
-	PMptr = (ProcessManagement*)PMObj.pData;
-	GPSptr = (SM_GPS*)GPSObj.pData;
+	// Setup SM (Give access to SM objects and check if there are errors)
+	myGPSObj.setupSharedMemory();
 
 	// Initialize shutdown status
-	PMptr->Shutdown.Flags.GPS = 0;
+	myGPSObj.setShutdownFlag(0);
+	// Connect to laser sensor(Authentication process)
+	myGPSObj.connect("192.168.1.200", 24000);
 
-	while (!PMptr->Shutdown.Flags.GPS) {
+	//-------------MAIN LOOP-------------//
+
+	while (!myGPSObj.getShutdownFlag()) {
 		// Changes its heartbeat to 1, if PM doesn't change it back to 0, add PMCounter
-		if (PMptr->Heartbeat.Flags.GPS == 0) {
-			PMptr->Heartbeat.Flags.GPS = 1;
+		if (!myGPSObj.getHeartbeat()) {
+			myGPSObj.setHeartbeat(1);
 			PMCounter = 0;
 		}
 		else {
@@ -57,14 +42,29 @@ int main()
 
 			if (PMCounter > max_waitCount) {
 				std::cout << "PM failed, sending shutdown signal..." << std::endl;
-				PMptr->Shutdown.Status = 0xFF;
-			}	
+				myGPSObj.setShutdownStatus(1);
+			}
 		}
-	
+
+		// Scan and check its length
+		myGPSObj.askForScan();
+
+		if (!myGPSObj.checkData()) {
+			Console::WriteLine("skipping this scan...(Header check failed)");
+			continue; // skips the current scan and retry
+		}
+		if (!myGPSObj.checkCRC()) {
+			Console::WriteLine("skipping this scan...(CRC check failed)");
+			continue; // skips the current scan and retry
+		}
+
+		myGPSObj.getData(); // prints the important datas(Northing,Easting,Heigh etc..)
+		myGPSObj.sendDataToSharedMemory(); // send datas to SM structure
 
 		Thread::Sleep(25);
 	}
 
 	std::cout << "GPS process terminating..." << std::endl;
+
 	return 0;
 }

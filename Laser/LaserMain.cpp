@@ -12,7 +12,7 @@
 #include "Laser.h"
 
 using namespace System;
-using namespace System::Net::Sockets; 
+using namespace System::Net::Sockets;
 using namespace System::Net; //For TcpClient
 using namespace System::Text; //For converting between bytes and ASCII 
 using namespace System::Threading;
@@ -25,17 +25,14 @@ const int max_waitCount = 100;  //2.5sec
 int main() {
 	// Create a Laser object
 	Laser myLaserObj;
-	
+
 	// Setup SM (Give access to SM objects and check if there are errors)
 	myLaserObj.setupSharedMemory();
 
 	// Initialize shutdown status
 	myLaserObj.setShutdownFlag(0);
 	// Connect to laser sensor(Authentication process)
-	std::cout << "BEFORE connect" << std::endl;
 	myLaserObj.connect("192.168.1.200", 23000);
-	std::cout << "AFTER connect" << std::endl;
-	Thread::Sleep(3000);
 
 	//-------------MAIN LOOP-------------//
 
@@ -54,18 +51,27 @@ int main() {
 			}
 		}
 
-		// Scan and output
-		myLaserObj.askForScan(); 
-		if (!myLaserObj.checkData()) { 
+		// Scan and check its length
+		myLaserObj.askForScan();
+		if (!myLaserObj.checkArrayLength()) {
+			Console::WriteLine("skipping this scan...(Length check failed)");
 			continue; // skips the current scan and retry
 		}
-		myLaserObj.getData(); // get calculated data and prints
+
+		// Extract key datas and check the data
+		myLaserObj.extractData();
+		if (!myLaserObj.checkData()) {
+			Console::WriteLine("skipping this scan...(Data check failed)");
+			continue; // skips the current scan and retry
+		}
+
+		myLaserObj.getData(); // get calculated X and Y datas and print
+		myLaserObj.sendDataToSharedMemory(); // send calculated X and Y datas to SM structure
 
 		Thread::Sleep(25);
 	}
 
 	std::cout << "Laser process terminating..." << std::endl;
-	//NOTE TO SELF: DONT FORGET TO CHANGE SOLUTION'S PROPERTY'S CONFIG. PROP. and change to 'release' & 'x64' to avoid crashes.
+
 	return 0;
 }
-

@@ -3,6 +3,7 @@
 #include <UGV_module.h>
 #include <smstructs.h>
 
+
 ref class Laser : public UGV_module //Laser class created by inheriting from 'UGV_module' class
 {
 
@@ -10,7 +11,9 @@ public:
 	int connect(String^ hostName, int portNumber) override;
 	int setupSharedMemory() override;
 	int askForScan() override;
+	int extractData();								// added just in Laser.h
 	int getData() override;
+	bool checkArrayLength();						// added just in Laser.h
 	bool checkData() override;
 	int sendDataToSharedMemory() override;
 	int setShutdownFlag(bool shutdown) override;
@@ -23,7 +26,6 @@ public:
 protected: //All added by me
 	SM_Laser* Laserptr;									// SM_Laser pointer						
 	array<String^>^ LaserDataArray = nullptr;			// Array of Laser data separated by ' '	
-	bool checkFlag;										// checkFlag for checkData() which checks for correct header and amount
 	double StartAngle;									// Start angle in degree
 	double Resolution;									// Angular step wideth in degree
 	int AmountOfRanges;									// Amount of range-values scanned

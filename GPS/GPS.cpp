@@ -1,44 +1,186 @@
-
 #include "GPS.h"
+#pragma pack(1)
+
+struct GPSstruct // 112 bytes
+{
+	unsigned int Header;
+	unsigned char Discards1[40];
+	double Northing;
+	double Easting;
+	double Height;
+	unsigned char Discards2[40];
+	unsigned int Checksum;
+};
+GPSstruct NovatelGPS; // Create the struct's object
 
 int GPS::connect(String^ hostName, int portNumber) 
 {
-	// YOUR CODE HERE
+	// Creat TcpClient object and connect to it
+	Client = gcnew TcpClient(hostName, portNumber);
+
+	// Configure connection (copied from Laser)
+	Client->NoDelay = true;
+	Client->ReceiveTimeout = 500;//ms
+	Client->SendTimeout = 500;//ms
+	Client->ReceiveBufferSize = 1024;
+	Client->SendBufferSize = 1024;
+
+	// unsigned char array is created on managed heap
+	ReadData = gcnew array<unsigned char>(225); // >twice the size of data packet(112) (?)
+
+	// Get the network stream object associated with client so we 
+	// can use it to read and write
+	Stream = Client->GetStream();
+
 	return 1;
 }
 int GPS::setupSharedMemory() 
 {
-	// YOUR CODE HERE
+	// Use the given SM pointer to point to the SM objects needed
+	ProcessManagementData = new SMObject(_TEXT("ProcessManagement"), sizeof(ProcessManagement));
+	SensorData = new SMObject(_TEXT("GPS"), sizeof(SM_GPS));
+
+	// Give access to the SM object and check if there are errors
+	ProcessManagementData->SMAccess();
+	if (ProcessManagementData->SMAccessError) {
+		std::cout << "Shared memory access of PMObj failed" << std::endl;
+		std::cout << "Press any key to exit/continue..." << std::endl;
+		getch();
+		return -2;
+	}
+
+	SensorData->SMAccess();
+	if (ProcessManagementData->SMAccessError) {
+		std::cout << "Shared memory access of GPSObj failed" << std::endl;
+		std::cout << "Press any key to exit/continue..." << std::endl;
+		getch();
+		return -2;
+	}
+
+	// Allocate PM. pointer to pData	
+	PMptr = (ProcessManagement*)ProcessManagementData->pData;
+	GPSptr = (SM_GPS*)SensorData->pData;
+
 	return 1;
 }
-int GPS::getData() 
+int GPS::askForScan()
 {
-	// YOUR CODE HERE
+	// Wait for the server to prepare the data, 1 ms would be sufficient, but used 10 ms (copied from Laser)
+	System::Threading::Thread::Sleep(10);
+	// Read the incoming data if it is available
+	if (Stream->DataAvailable) {
+		Stream->Read(ReadData, 0, ReadData->Length);
+	}
+
 	return 1;
 }
-bool GPS::checkData() 
+bool GPS::checkData() // trapping header AND store the data in the created struct
 {
-	// YOUR CODE HERE
+	bool validHeader = false;
+	unsigned int Header = 0;
+	unsigned char Data; // to store each byte that was read
+	int i = 0;
+	int Start; // index indicating the start of the actual data(after the header)
+
+	do
+	{
+		Data = ReadData[i++];
+		Header = ((Header << 8) | Data);
+		if (Header == 0xaa44121c) {
+			validHeader = true;
+		}
+		if (i >= 225) { // exceeding size of array
+			break;
+		}
+	} while (Header != 0xaa44121c);
+
+	if (validHeader == false) {
+		return 0; 
+	}
+
+	Start = i - 4; 
+	
+	// Storing datas(after the header) into the created struct
+	unsigned char* byteptr = nullptr;
+	byteptr = (unsigned char*)&NovatelGPS;
+	for (int i = Start; i < Start + sizeof(NovatelGPS); i++)
+	{
+		*(byteptr++) = ReadData[i];
+	}
+
+	return 1;
+}
+bool GPS::checkCRC() // Comparing CRC of the data from the struct between the actual one and the calculated one
+{
+	unsigned char* byteptr2 = (unsigned char*)&NovatelGPS;
+	calculatedCRC = CalculateBlockCRC32(108 /*bytes of all data except the checksum itself*/, byteptr2);
+
+	checkCRC_flag = 0;
+
+	if (calculatedCRC == NovatelGPS.Checksum) {
+		checkCRC_flag = 1;
+	}
+	
+	return checkCRC_flag;
+}
+int GPS::getData() //prints the important datas (after the checks passed)
+{
+	//System::Threading::Thread::Sleep(10);
+	Console::WriteLine("Northing: ", NovatelGPS.Northing);
+	Console::WriteLine("Easting: ", NovatelGPS.Northing);
+	Console::WriteLine("Height: ", NovatelGPS.Northing);
+	Console::WriteLine("Calculated CRC: ", calculatedCRC);
+	Console::WriteLine("Stored CRC: ", NovatelGPS.Checksum);
+
 	return 1;
 }
 int GPS::sendDataToSharedMemory() 
 {
-	// YOUR CODE HERE
+	GPSptr->northing = NovatelGPS.Northing;
+	GPSptr->easting = NovatelGPS.Easting;
+	GPSptr->height = NovatelGPS.Height;
+
 	return 1;
 }
-bool GPS::getShutdownFlag() 
+int GPS::setShutdownFlag(bool shutdown) // Update shutdown signal for module
 {
-	// YOUR CODE HERE
+	if (shutdown == 1) {
+		PMptr->Shutdown.Flags.GPS = 1;
+	}
+	else {
+		PMptr->Shutdown.Flags.GPS = 0;
+	}
 	return 1;
 }
-int GPS::setHeartbeat(bool heartbeat) 
+int GPS::setShutdownStatus(bool shutdown) // Update shutdown status for when it detects that PM died
 {
-	// YOUR CODE HERE
+	if (shutdown == 1) {
+		PMptr->Shutdown.Status = 0xFF;
+	}
+	else {
+		PMptr->Shutdown.Status = 0x00;
+	}
 	return 1;
+}
+bool GPS::getShutdownFlag() // Get Shutdown signal for module, from Process Management SM
+{
+	return PMptr->Shutdown.Flags.GPS;
+}
+int GPS::setHeartbeat(bool heartbeat) // Update heartbeat signal for module
+{
+	PMptr->Heartbeat.Flags.GPS = heartbeat;
+	return 1;
+}
+bool GPS::getHeartbeat() // Get Heartbeat signal for module, from Process Management SM
+{
+	return PMptr->Heartbeat.Flags.GPS;
 }
 GPS::~GPS()
 {
-	// YOUR CODE HERE
+		Stream->Close();
+		Client->Close();
+		delete ProcessManagementData;
+		delete SensorData;
 }
 
 

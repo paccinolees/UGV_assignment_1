@@ -17,13 +17,13 @@ using namespace System::Threading;
 
 #define NUM_UNITS 5 //no. of modules, EG. if only done GPS.exe change this to 1 etc..
 
-bool IsProcessRunning(const char* processName); 
+bool IsProcessRunning(const char* processName);
 void StartProcesses();
 
 //defining start up sequence
 TCHAR Units[10][20] = //
 {
-	TEXT("Laser.exe"),
+	TEXT("Laser1.exe"),
 	TEXT("Display.exe"),
 	TEXT("VehicleControl.exe"),
 	TEXT("GPS.exe"),
@@ -39,6 +39,9 @@ int DisplayCounter = 0;
 const int max_waitCount = 8; // 2 sec 
 
 int main() {
+	array<unsigned char>^ ReadData;
+	ReadData = gcnew array<unsigned char>(256);
+	Console::WriteLine(ReadData->Length);
 	// Instantiate SM Objects
 	SMObject PMObj(_TEXT("ProcessManagement"), sizeof(ProcessManagement));
 	SMObject LaserObj(_TEXT("Laser"), sizeof(SM_Laser));
@@ -59,7 +62,7 @@ int main() {
 		std::cout << "Shared memory access of PMObj failed" << std::endl;
 		std::cout << "Press any key to exit/continue..." << std::endl;
 		getch();
-		return -2; 
+		return -2;
 	}
 
 	LaserObj.SMCreate();
@@ -137,7 +140,7 @@ int main() {
 		else {
 			DisplayCounter += 1;
 		}
-		
+
 		// Attempt to restart non-crit processes
 		if (GPSCounter > max_waitCount) {
 			std::cout << "GPS(non-crit.) failed, attempting restart..." << std::endl;
@@ -155,25 +158,25 @@ int main() {
 		}
 
 		//Shutdown routine (kbhit or critical processes failed)
-		if (_kbhit()  /*|| LaserCounter > max_waitCount || CameraCounter > max_waitCount || VehicleControlCounter > max_waitCount */ ) {
+		if (_kbhit()) {
 			PMptr->Shutdown.Status = 0xFF;
-			std::cout << "SHUTDOWN routine activated by kbhit/failure of critical processes" << std::endl;
+			std::cout << "SHUTDOWN routine activated by kbhit" << std::endl;
 		}
-		//added for debugging, DEL LATER
+
 		if (LaserCounter > max_waitCount) {
 			PMptr->Shutdown.Status = 0xFF;
-			std::cout << "Laser failed...shutting down" << std::endl;
+			std::cout << "Laser failed...SHUTDOWN routine activated" << std::endl;
 		}
 		if (CameraCounter > max_waitCount) {
 			PMptr->Shutdown.Status = 0xFF;
-			std::cout << "Camera failed...shutting down" << std::endl;
+			std::cout << "Camera failed...SHUTDOWN routine activated" << std::endl;
 		}
 		if (VehicleControlCounter > max_waitCount) {
 			PMptr->Shutdown.Status = 0xFF;
-			std::cout << "VehicleControl failed...shutting down" << std::endl;
+			std::cout << "VehicleControl failed...SHUTDOWN routine activated" << std::endl;
 		}
-	
-	} 
+
+	}
 	//ASK LATER IF I SHUD INPUT A DELAY LIKE THIS
 	std::cout << "Process Manager terminating in 3 seconds..." << std::endl;
 	Thread::Sleep(3000);
@@ -194,7 +197,7 @@ bool IsProcessRunning(const char* processName)
 
 	if (Process32First(snapshot, &entry))
 		while (Process32Next(snapshot, &entry))
-			if (!_stricmp((const char *)entry.szExeFile, processName))
+			if (!_stricmp((const char*)entry.szExeFile, processName))
 				exists = true;
 
 	CloseHandle(snapshot);
@@ -209,7 +212,7 @@ void StartProcesses()
 
 	for (int i = 0; i < NUM_UNITS; i++)
 	{
-		if (!IsProcessRunning((const char *)Units[i]))
+		if (!IsProcessRunning((const char*)Units[i]))
 		{
 			ZeroMemory(&s[i], sizeof(s[i]));
 			s[i].cb = sizeof(s[i]);
@@ -225,5 +228,3 @@ void StartProcesses()
 		}
 	}
 }
-
-

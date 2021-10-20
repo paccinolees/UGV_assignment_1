@@ -3,12 +3,12 @@
 #include "Laser.h"
 #include <math.h> // sin, cos, M_PI(pi)
 
+
 int Laser::connect(String^ hostName, int portNumber) // Establish TCP connection
 {
 	// Creat TcpClient object and connect to it
-	std::cout << "1" << std::endl;
 	Client = gcnew TcpClient(hostName, portNumber);
-	std::cout << "2" << std::endl;
+
 	// Configure connection
 	Client->NoDelay = true;
 	Client->ReceiveTimeout = 500;//ms
@@ -22,27 +22,23 @@ int Laser::connect(String^ hostName, int portNumber) // Establish TCP connection
 
 	// Get the network stream object associated with client so we 
 	// can use it to read and write
-	std::cout << "3" << std::endl;
 	Stream = Client->GetStream();
-	std::cout << "4" << std::endl;
+
 	//-------------Authentication-------------//
 	// 
 	//String for authentication
 	String^ zID = gcnew String("5331003\n");
 	// Convert zID string to an array of unsigned char to be used for authentication
-	std::cout << "5" << std::endl;
 	SendData = System::Text::Encoding::ASCII->GetBytes(zID);
-	std::cout << "6" << std::endl;
 	// Write zID to the stream
 	Stream->Write(SendData, 0, SendData->Length);
-	std::cout << "7" << std::endl;
 	// Wait for the server to prepare the data, 1 ms would be sufficient, but used 10 ms
 	System::Threading::Thread::Sleep(10);
 	// Read the incoming data
 	Stream->Read(ReadData, 0, ReadData->Length);
-	std::cout << "8" << std::endl;
+
 	ResponseData = System::Text::Encoding::ASCII->GetString(ReadData);
-	std::cout << "9" << std::endl;
+
 	// Print the received string on the screen
 	Console::WriteLine(ResponseData); // should print 'OK'
 
@@ -56,7 +52,7 @@ int Laser::setupSharedMemory() // Create and access shared memory objects
 	// Use the given SM pointer to point to the SM objects needed
 	ProcessManagementData = new SMObject(_TEXT("ProcessManagement"), sizeof(ProcessManagement));
 	SensorData = new SMObject(_TEXT("Laser"), sizeof(SM_Laser));
-	
+
 	// Give access to the SM object and check if there are errors
 	ProcessManagementData->SMAccess();
 	if (ProcessManagementData->SMAccessError) {
@@ -97,19 +93,22 @@ int Laser::askForScan() // Ask server for scan
 	Stream->Read(ReadData, 0, ReadData->Length);
 	// Convert incoming data from an array of unsigned char bytes to an ASCII string
 	ResponseData = System::Text::Encoding::ASCII->GetString(ReadData);
+	// Store string data to an array
 	LaserDataArray = ResponseData->Split(' '); //Split the string by ' ' and store in array
 
+	return 1;
+}
+int Laser::extractData() // Extract useful data from scan 
+{
 	// Extract key datas and convert to int32 to be used in calculations of X and Y
 	StartAngle = System::Convert::ToInt32(LaserDataArray[23], 16);
 	Resolution = System::Convert::ToInt32(LaserDataArray[24], 16) / 10000.0; //shud be 0.5 degree
 	AmountOfRanges = System::Convert::ToInt32(LaserDataArray[25], 16); //shud be 361
-	Header = LaserDataArray[1]; // shud be sRA
 
 	return 1;
 }
-int Laser::getData() // Get data from sensor (GPS / Laser) 
+int Laser::getData() // Get data from sensor  
 {
-	
 	// Calculation of X and Y
 	Range = gcnew array<double>(AmountOfRanges);
 	RangeX = gcnew array<double>(AmountOfRanges); //See week5's slides for diagram of the co-ordinates wrt. the actual laser sensor
@@ -118,32 +117,42 @@ int Laser::getData() // Get data from sensor (GPS / Laser)
 	for (int i = 0; i < AmountOfRanges; i++)
 	{
 		Range[i] = System::Convert::ToInt32(LaserDataArray[26 + i], 16);
-		RangeX[i] = Range[i] * sin(i * Resolution * M_PI / 180.0); 
+		RangeX[i] = Range[i] * sin(i * Resolution * M_PI / 180.0);
 		RangeY[i] = -Range[i] * cos(i * Resolution * M_PI / 180.0);
 
-		// Save the calculated Datas in shared memory structures
-		Laserptr->x[i] = RangeX[i];
-		Laserptr->y[i] = RangeY[i];
-
-		//Print the received string on the screen
-		Console::WriteLine("#", i, "		X: ", RangeX[i], "	Y: ", RangeY[i]);
-
+		//Print the calculated X and Y ranges in millimetres (3 decimal places)
+		Console::WriteLine("#" + (i + 1) + "			X: {0,10:F3} mm		Y: {1,10:F3} mm", RangeX[i], RangeY[i]);
 	}
-	
+
 	return 1;
 }
-bool Laser::checkData() // Check Data is correct (eg. headers and amount of data)
+bool Laser::checkArrayLength() // Check length of Data is correct
 {
-	checkFlag = 1;
-	if (AmountOfRanges != 361 || Header != "sRA") {
-		checkFlag = 0;
+	checkLengthFlag = 1;
+	if (LaserDataArray->Length < 26) {
+		checkLengthFlag = 0;
 	}
 
-	return checkFlag;
+	return checkLengthFlag;
+}
+bool Laser::checkData() // Check Data is correct (eg. headers/amount of datas)
+{
+	checkDataFlag = 1;
+	//Console::WriteLine("Laser[0]: " + LaserDataArray[0]);
+	if (AmountOfRanges != 361) {
+		checkDataFlag = 0;
+	}
+
+	return checkDataFlag;
 }
 int Laser::sendDataToSharedMemory() // Save Data in shared memory structures
 {
-	// IMPLEMENTED UNDER getData()
+	for (int i = 0; i < AmountOfRanges; i++)
+	{
+		// Save the calculated Datas in shared memory structures
+		Laserptr->x[i] = RangeX[i];
+		Laserptr->y[i] = RangeY[i];
+	}
 
 	return 1;
 }
