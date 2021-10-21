@@ -13,7 +13,7 @@ struct GPSstruct // 112 bytes
 };
 GPSstruct NovatelGPS; // Create the struct's object
 
-int GPS::connect(String^ hostName, int portNumber) 
+int GPS::connect(String^ hostName, int portNumber)
 {
 	// Creat TcpClient object and connect to it
 	Client = gcnew TcpClient(hostName, portNumber);
@@ -34,7 +34,7 @@ int GPS::connect(String^ hostName, int portNumber)
 
 	return 1;
 }
-int GPS::setupSharedMemory() 
+int GPS::setupSharedMemory()
 {
 	// Use the given SM pointer to point to the SM objects needed
 	ProcessManagementData = new SMObject(_TEXT("ProcessManagement"), sizeof(ProcessManagement));
@@ -95,11 +95,11 @@ bool GPS::checkData() // trapping header AND store the data in the created struc
 	} while (Header != 0xaa44121c);
 
 	if (validHeader == false) {
-		return 0; 
+		return 0;
 	}
 
-	Start = i - 4; 
-	
+	Start = i - 4;
+
 	// Storing datas(after the header) into the created struct
 	unsigned char* byteptr = nullptr;
 	byteptr = (unsigned char*)&NovatelGPS;
@@ -120,25 +120,26 @@ bool GPS::checkCRC() // Comparing CRC of the data from the struct between the ac
 	if (calculatedCRC == NovatelGPS.Checksum) {
 		checkCRC_flag = 1;
 	}
-	
+
 	return checkCRC_flag;
 }
 int GPS::getData() //prints the important datas (after the checks passed)
 {
-	//System::Threading::Thread::Sleep(10);
-	Console::WriteLine("Northing: ", NovatelGPS.Northing);
-	Console::WriteLine("Easting: ", NovatelGPS.Northing);
-	Console::WriteLine("Height: ", NovatelGPS.Northing);
-	Console::WriteLine("Calculated CRC: ", calculatedCRC);
-	Console::WriteLine("Stored CRC: ", NovatelGPS.Checksum);
+	easting = NovatelGPS.Easting;
+	northing = NovatelGPS.Northing;
+	height = NovatelGPS.Height;
 
 	return 1;
 }
-int GPS::sendDataToSharedMemory() 
+void GPS::printData()
 {
-	GPSptr->northing = NovatelGPS.Northing;
-	GPSptr->easting = NovatelGPS.Easting;
-	GPSptr->height = NovatelGPS.Height;
+	Console::Write("Northing: {0,10:F3}" + "	Easting: {1, 10:F3}" + "	Height: {2, 10:F3}\n", northing, easting, height);
+}
+int GPS::sendDataToSharedMemory()
+{
+	GPSptr->northing = northing;
+	GPSptr->easting = easting;
+	GPSptr->height = height;
 
 	return 1;
 }
@@ -177,10 +178,10 @@ bool GPS::getHeartbeat() // Get Heartbeat signal for module, from Process Manage
 }
 GPS::~GPS()
 {
-		Stream->Close();
-		Client->Close();
-		delete ProcessManagementData;
-		delete SensorData;
+	Stream->Close();
+	Client->Close();
+	delete ProcessManagementData;
+	delete SensorData;
 }
 
 

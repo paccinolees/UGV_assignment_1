@@ -39,9 +39,6 @@ int DisplayCounter = 0;
 const int max_waitCount = 8; // 2 sec 
 
 int main() {
-	array<unsigned char>^ ReadData;
-	ReadData = gcnew array<unsigned char>(256);
-	Console::WriteLine(ReadData->Length);
 	// Instantiate SM Objects
 	SMObject PMObj(_TEXT("ProcessManagement"), sizeof(ProcessManagement));
 	SMObject LaserObj(_TEXT("Laser"), sizeof(SM_Laser));

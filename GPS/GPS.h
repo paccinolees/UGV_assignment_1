@@ -24,10 +24,14 @@ public:
 	int setShutdownStatus(bool shutdown) override;
 	bool getHeartbeat() override;
 	bool checkCRC(); //added just in GPS.h
+	void printData(); //added just in GPS.h
 	~GPS();
 
 protected: //All added by me
 	SM_GPS* GPSptr;									// SM_GPS pointer		
 	bool checkCRC_flag;								// flag for checkCRC()
 	unsigned int calculatedCRC;						// Calculated CRC value using "CalculateBlockCRC32" function
+	double northing;
+	double easting;
+	double height;
 };

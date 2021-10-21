@@ -101,9 +101,17 @@ int Laser::askForScan() // Ask server for scan
 int Laser::extractData() // Extract useful data from scan 
 {
 	// Extract key datas and convert to int32 to be used in calculations of X and Y
-	StartAngle = System::Convert::ToInt32(LaserDataArray[23], 16);
-	Resolution = System::Convert::ToInt32(LaserDataArray[24], 16) / 10000.0; //shud be 0.5 degree
-	AmountOfRanges = System::Convert::ToInt32(LaserDataArray[25], 16); //shud be 361
+	try
+	{
+		StartAngle = System::Convert::ToInt32(LaserDataArray[23], 16);
+		Resolution = System::Convert::ToInt32(LaserDataArray[24], 16) / 10000.0; //shud be 0.5 degree
+		AmountOfRanges = System::Convert::ToInt32(LaserDataArray[25], 16); //shud be 361
+	}
+	catch (FormatException^)
+	{
+		Console::WriteLine("Bad String, skipping this scan...");
+		return 0;
+	}
 
 	return 1;
 }
@@ -116,7 +124,20 @@ int Laser::getData() // Get data from sensor
 
 	for (int i = 0; i < AmountOfRanges; i++)
 	{
-		Range[i] = System::Convert::ToInt32(LaserDataArray[26 + i], 16);
+		try
+		{
+			Range[i] = System::Convert::ToInt32(LaserDataArray[26 + i], 16);
+		}
+		catch (FormatException^)
+		{
+			Console::WriteLine("Bad String: '" + LaserDataArray[26 + i] + "' , skipping this scan...");
+			return 0;
+		}
+		catch (ArgumentOutOfRangeException^)
+		{
+			return 0;
+		}
+
 		RangeX[i] = Range[i] * sin(i * Resolution * M_PI / 180.0);
 		RangeY[i] = -Range[i] * cos(i * Resolution * M_PI / 180.0);
 
@@ -129,7 +150,7 @@ int Laser::getData() // Get data from sensor
 bool Laser::checkArrayLength() // Check length of Data is correct
 {
 	checkLengthFlag = 1;
-	if (LaserDataArray->Length < 26) {
+	if (LaserDataArray->Length < 386) {
 		checkLengthFlag = 0;
 	}
 

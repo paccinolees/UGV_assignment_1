@@ -58,7 +58,8 @@ int main()
 			continue; // skips the current scan and retry
 		}
 
-		myGPSObj.getData(); // prints the important datas(Northing,Easting,Heigh etc..)
+		myGPSObj.getData(); // get the important datas and store it in the member variables
+		myGPSObj.printData(); // Prints those important datas
 		myGPSObj.sendDataToSharedMemory(); // send datas to SM structure
 
 		Thread::Sleep(25);

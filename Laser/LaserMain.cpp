@@ -59,13 +59,22 @@ int main() {
 		}
 
 		// Extract key datas and check the data
-		myLaserObj.extractData();
+		int extractData_errorFlag = myLaserObj.extractData(); // returns 0 if failed
+		if (extractData_errorFlag == 0) {
+			continue; // skips the current scan and retry
+		}
+
 		if (!myLaserObj.checkData()) {
 			Console::WriteLine("skipping this scan...(Data check failed)");
 			continue; // skips the current scan and retry
 		}
 
-		myLaserObj.getData(); // get calculated X and Y datas and print
+		// get calculated X and Y datas and print
+		int getData_errorFlag = myLaserObj.getData(); // returns 0 if failed
+		if (getData_errorFlag == 0) {
+			continue; // skips the current scan and retry
+		}
+
 		myLaserObj.sendDataToSharedMemory(); // send calculated X and Y datas to SM structure
 
 		Thread::Sleep(25);
