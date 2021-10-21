@@ -133,7 +133,7 @@ int GPS::getData() //prints the important datas (after the checks passed)
 }
 void GPS::printData()
 {
-	Console::Write("Northing: {0,10:F3}" + "	Easting: {1, 10:F3}" + "	Height: {2, 10:F3}\n", northing, easting, height);
+	Console::Write("Northing: {0,7:F3}	" + "	Easting: {1, 7:F3}	" + "	Height: {2, 7:F3}\n", northing, easting, height);
 }
 int GPS::sendDataToSharedMemory()
 {
