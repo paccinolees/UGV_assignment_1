@@ -140,7 +140,7 @@ int main(int argc, char ** argv) {
 	//   custom vehicle.
 	// -------------------------------------------------------------------------
 	vehicle = new MyVehicle(Laserptr->AmountOfRange, Laserptr->x, Laserptr->y); // Modified the constructor so that it takes in and store the laser scans
-
+	
 	glutMainLoop();
 
 	if (vehicle != NULL) {
@@ -176,7 +176,7 @@ void display() {
 	// draw my vehicle
 	if (vehicle != NULL) {
 		vehicle->draw();
-
+		MyVehicle myvehicle(Laserptr->AmountOfRange, Laserptr->x, Laserptr->y);
 	}
 
 
@@ -292,7 +292,7 @@ void idle() {
 	// do a simulation step
 	if (vehicle != NULL) {
 		vehicle->update(speed, steering, elapsedTime);
-		vehicle = new MyVehicle(Laserptr->AmountOfRange, Laserptr->x, Laserptr->y); // Update new scans
+		
 	}
 
 	display();

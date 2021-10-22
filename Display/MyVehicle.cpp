@@ -172,6 +172,14 @@ void MyVehicle::drawLaserScans()
 		glEnd();
 	}
 }
+/*void MyVehicle::updateLaserScans(int AmountOfRanges, double x[], double y[])
+{
+	NumOfRanges = AmountOfRanges;
+	for (int i = 0; i < AmountOfRanges; i++) {
+		xRange[i] = x[i];
+		yRange[i] = y[i];
+	}
+}*/
 void MyVehicle::draw()
 {
 	glPushMatrix();
@@ -180,6 +188,6 @@ void MyVehicle::draw()
 	drawUGV(steering);
 	drawLaserScans();
 
-	System::Threading::Thread::Sleep(50);
+	//System::Threading::Thread::Sleep(50);
 	glPopMatrix();
 }

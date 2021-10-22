@@ -10,6 +10,7 @@ public:
 	MyVehicle(int AmountOfRanges, double x[], double y[]);
 	virtual void draw();
 	void drawLaserScans();
+	//void updateLaserScans(int AmountOfRanges, double x[], double y[]);
 
 protected:
 	int NumOfRanges;
