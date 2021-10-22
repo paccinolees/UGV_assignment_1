@@ -50,9 +50,11 @@ const int max_waitCount = 100;  //2.5sec
 
 // Instantiate SM Objects
 SMObject PMObj(_TEXT("ProcessManagement"), sizeof(ProcessManagement));
+SMObject LaserObj(_TEXT("Laser"), sizeof(SM_Laser));
 
-// Allocate PM. pointer to pData
+// Create a pointer to SM structs
 ProcessManagement* PMptr;
+SM_Laser* Laserptr;
 
 
 void display();
@@ -91,8 +93,16 @@ int main(int argc, char ** argv) {
 		getch();
 		return -2;
 	}
+	LaserObj.SMAccess();
+	if (LaserObj.SMAccessError) {
+		std::cout << "Shared memory access of LaserObj failed" << std::endl;
+		std::cout << "Press any key to exit/continue..." << std::endl;
+		getch();
+		return -2;
+	}
 
 	PMptr = (ProcessManagement*)PMObj.pData;
+	Laserptr = (SM_Laser*)LaserObj.pData;
 
 	// Initialize shutdown status
 	PMptr->Shutdown.Flags.OpenGL = 0;
@@ -129,8 +139,7 @@ int main(int argc, char ** argv) {
 	//   with the name of the class you want to show as the current 
 	//   custom vehicle.
 	// -------------------------------------------------------------------------
-	vehicle = new MyVehicle();
-
+	vehicle = new MyVehicle(Laserptr->AmountOfRange, Laserptr->x, Laserptr->y);
 
 	glutMainLoop();
 

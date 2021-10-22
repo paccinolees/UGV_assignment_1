@@ -7,8 +7,14 @@
 class MyVehicle : public Vehicle
 {
 public:
-	MyVehicle();
+	MyVehicle(int AmountOfRanges, double x[], double y[]);
 	virtual void draw();
+	void drawLaserScans();
+
+protected:
+	int NumOfRanges;
+	double yRange[361];
+	double xRange[361];
 };
 
 #endif

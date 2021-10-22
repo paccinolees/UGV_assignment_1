@@ -24,9 +24,9 @@
 void drawUGV(double steerAngle)
 {
 	const float red = .8, green = .1, blue = .2;
-	const float width = .4;
-	const float wheel_height = .4;
-	const float wheel_width = .1;
+	const float width = .4; //.4
+	const float wheel_height = .4; //.4
+	const float wheel_width = 2; //.1
 	const float vertices[10][3] = {
 		// left-hand side
 		{ .5,   wheel_height -0.1,    width},
@@ -45,7 +45,7 @@ void drawUGV(double steerAngle)
 	// quad faces
 	glBegin(GL_QUADS);
 		// bottom		
-		glColor3f(red*.3, green, blue);
+		glColor3f(red * .3, green, blue);
 		glVertex3fv(vertices[0]);
 		glVertex3fv(vertices[5]);
 		glVertex3fv(vertices[6]);
@@ -98,8 +98,29 @@ void drawUGV(double steerAngle)
 		glVertex3fv(vertices[8]);
 		glVertex3fv(vertices[9]);
 	glEnd();
+	/*
+	glBegin(GL_QUADS);
+	glColor3f(red * .3, green, blue);
 
+	glVertex3f(0, 0, 0);// front(my mental co-or)
+	glVertex3f(-5, 0, 0);
+	glVertex3f(-5, 1, 0);
+	glVertex3f(0, 1, 0);
 
+	glVertex3f(0, 0, 1);// back
+	glVertex3f(-5, 0, 1);
+	glVertex3f(-5, 1, 1);
+	glVertex3f(0, 1, 1);
+
+	glVertex3f(0, 1, 1);// top/above
+	glVertex3f(0, 1, 0);
+	glVertex3f(-5, 1, 0);
+	glVertex3f(-5, 1, 1);
+
+	glEnd();
+	*/
+	
+	
 	// draw wheels
 	glPushMatrix();
 		glColor3f(1,1,1);
@@ -132,16 +153,35 @@ void drawUGV(double steerAngle)
 	glPopMatrix();
 }
 
-MyVehicle::MyVehicle()
+MyVehicle::MyVehicle(int AmountOfRanges, double x[], double y[]) //Constructor's job is to store the laser scan's values
 {
+	NumOfRanges = AmountOfRanges;
+	for (int i = 0; i < AmountOfRanges; i++) {
+		xRange[i] = x[i];
+		yRange[i] = y[i];
+	}
 }
-
+void MyVehicle::drawLaserScans()
+{
+	//glPushMatrix();
+	//glTranslatef(0.5, 0.3, 0); ??
+	glColor3f(1, 1, 1);
+	//glLineWidth(1.5);
+	for (int i = 0; i < NumOfRanges; i++) {
+		glBegin(GL_LINES);
+		glVertex3f(xRange[i] / 1000, 0, -yRange[i]/ 1000);
+		glVertex3f(xRange[i] / 1000, 1, -yRange[i] / 1000);
+		glEnd();
+	}
+	//glPopMatrix();
+}
 void MyVehicle::draw()
 {
 	glPushMatrix();
 	positionInGL();
 	
 	drawUGV(steering);
+	drawLaserScans();
 
 	glPopMatrix();
 }

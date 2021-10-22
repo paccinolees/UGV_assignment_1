@@ -23,6 +23,7 @@ struct SM_Laser
 {
 	double x[STANDARD_LASER_LENGTH];
 	double y[STANDARD_LASER_LENGTH];
+	int AmountOfRange;
 };
 
 struct SM_VehicleControl

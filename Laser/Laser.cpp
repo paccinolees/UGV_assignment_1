@@ -135,7 +135,7 @@ int Laser::getData() // Get data from sensor
 		}
 		catch (ArgumentOutOfRangeException^)
 		{
-			return 0;
+			return 0; //skips
 		}
 
 		RangeX[i] = Range[i] * sin(i * Resolution * M_PI / 180.0);
@@ -173,6 +173,7 @@ int Laser::sendDataToSharedMemory() // Save Data in shared memory structures
 		// Save the calculated Datas in shared memory structures
 		Laserptr->x[i] = RangeX[i];
 		Laserptr->y[i] = RangeY[i];
+		Laserptr->AmountOfRange = AmountOfRanges;
 	}
 
 	return 1;
