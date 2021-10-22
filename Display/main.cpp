@@ -292,6 +292,7 @@ void idle() {
 	// do a simulation step
 	if (vehicle != NULL) {
 		vehicle->update(speed, steering, elapsedTime);
+		vehicle = new MyVehicle(Laserptr->AmountOfRange, Laserptr->x, Laserptr->y); // Update new scans
 	}
 
 	display();

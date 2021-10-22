@@ -167,7 +167,7 @@ void MyVehicle::drawLaserScans()
 	glLineWidth(1);
 	for (int i = 0; i < NumOfRanges; i++) {
 		glBegin(GL_LINES);
-		glVertex3f(xRange[i] / 1000, 0, -yRange[i]/ 1000);
+		glVertex3f(xRange[i] / 1000, 0, -yRange[i] / 1000);
 		glVertex3f(xRange[i] / 1000, 1, -yRange[i] / 1000);
 		glEnd();
 	}
@@ -180,5 +180,6 @@ void MyVehicle::draw()
 	drawUGV(steering);
 	drawLaserScans();
 
+	System::Threading::Thread::Sleep(50);
 	glPopMatrix();
 }
