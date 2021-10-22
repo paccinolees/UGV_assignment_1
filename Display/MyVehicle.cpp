@@ -163,17 +163,14 @@ MyVehicle::MyVehicle(int AmountOfRanges, double x[], double y[]) //Constructor's
 }
 void MyVehicle::drawLaserScans()
 {
-	//glPushMatrix();
-	//glTranslatef(0.5, 0.3, 0); ??
 	glColor3f(1, 1, 1);
-	//glLineWidth(1.5);
+	glLineWidth(1);
 	for (int i = 0; i < NumOfRanges; i++) {
 		glBegin(GL_LINES);
 		glVertex3f(xRange[i] / 1000, 0, -yRange[i]/ 1000);
 		glVertex3f(xRange[i] / 1000, 1, -yRange[i] / 1000);
 		glEnd();
 	}
-	//glPopMatrix();
 }
 void MyVehicle::draw()
 {
