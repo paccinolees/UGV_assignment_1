@@ -139,7 +139,7 @@ int main(int argc, char ** argv) {
 	//   with the name of the class you want to show as the current 
 	//   custom vehicle.
 	// -------------------------------------------------------------------------
-	vehicle = new MyVehicle(Laserptr->AmountOfRange, Laserptr->x, Laserptr->y);
+	vehicle = new MyVehicle(Laserptr->AmountOfRange, Laserptr->x, Laserptr->y); // Modified the constructor so that it takes in and store the laser scans
 
 	glutMainLoop();
 
