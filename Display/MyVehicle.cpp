@@ -26,7 +26,7 @@ void drawUGV(double steerAngle)
 	const float red = .8, green = .1, blue = .2;
 	const float width = .4; //.4
 	const float wheel_height = .4; //.4
-	const float wheel_width = 2; //.1
+	const float wheel_width = .1; //.1
 	const float vertices[10][3] = {
 		// left-hand side
 		{ .5,   wheel_height -0.1,    width},
