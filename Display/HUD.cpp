@@ -216,7 +216,7 @@ void HUD::drawGPSnorthing(double x, double y, double r, double northing, const c
 	RenderString(buff, strlen(buff) * 18 * -.25, (r1 - 20) * y - 5, GLUT_BITMAP_HELVETICA_18);
 
 	// draw border
-	glColor3f(.5, .5, .5);
+	/*glColor3f(.5, .5, .5);
 	const double margin = 5;
 	glBegin(GL_LINE_LOOP);
 	x = cos((endR + margin) * DEGTORAD);
@@ -234,7 +234,7 @@ void HUD::drawGPSnorthing(double x, double y, double r, double northing, const c
 
 		glVertex2f((r2 + 15) * x, (r2 + 15) * y);
 	}
-	glEnd();
+	glEnd();*/
 
 	glPopMatrix();
 }
