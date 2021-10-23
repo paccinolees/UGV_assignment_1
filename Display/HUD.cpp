@@ -211,7 +211,9 @@ void HUD::Draw()
 		DrawGauge(600+winWidthOff, 280, 210, -40, 40, vehicle->getSteering(), "Steer");
 		glColor3f(1, 1, 1);
 		drawGPSnorthing(50, 200, 0, GPSptr->northing, "Northing:");
+		glColor3f(1, 1, 1);
 		drawGPSnorthing(100, 200, 0, GPSptr->northing, "Easting:");
+		glColor3f(1, 1, 1);
 		drawGPSnorthing(150, 200, 0, GPSptr->northing, "Height:");
 
 
