@@ -13,8 +13,8 @@ public:
 	void drawLaserScans();
 	
 protected:
-	int* NumOfRanges;
-	double* xRange;
+	int* NumOfRanges; // need to use pointers otherwise it wouldn't update (the way I do it)
+	double* xRange; 
 	double* yRange;
 };
 
