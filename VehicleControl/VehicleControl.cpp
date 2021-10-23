@@ -84,7 +84,7 @@ void VehicleControl::sendCommandToUGV(unsigned int flag)
 	//Prints the sent controls
 	std::cout << std::fixed;
 	std::cout << std::setprecision(2);
-	std::cout << "Steering: " << VCptr->Steering << "     \tSpeed: " << VCptr->Speed << "    \tFlag : " << flag << std::endl;
+	std::cout << "Steering: " << VCptr->Steering << "     \tSpeed: " << VCptr->Speed << "         \tFlag : " << flag << std::endl;
 
 	//Sends the controlString to control the UGV
 	SendData = System::Text::Encoding::ASCII->GetBytes(controlString);
