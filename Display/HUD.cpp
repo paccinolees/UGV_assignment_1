@@ -2,6 +2,9 @@
 #include "Camera.hpp"
 #include "Vehicle.hpp"
 
+#include "smstructs.h"
+#include "SMObject.h"
+
 #ifdef __APPLE__
 	#include <OpenGL/gl.h>
 	#include <OpenGL/glu.h>
@@ -85,6 +88,7 @@ void HUD::DrawGauge(double x, double y, double r, double min, double max, double
 	sprintf(buff, "%.1f", (max + min) * .5);
 	RenderString(buff, (r2 + 5) * cos((startR+endR)*.5 * DEGTORAD) - 10, (r2+3) * sin((startR+endR)*.5 * DEGTORAD), GLUT_BITMAP_HELVETICA_12);
 
+
 	double valPos = ((val - min) / (max - min));
 	valPos = (valPos * (endR - startR)) + startR;
 	if(valPos < startR)
@@ -140,6 +144,11 @@ void HUD::DrawGauge(double x, double y, double r, double min, double max, double
 
 void HUD::Draw()
 {
+	//accessing GPS' SM
+	SMObject GPSObj(_TEXT("GPS"), sizeof(SM_GPS));
+	SM_GPS* GPSptr;
+	GPSptr = (SM_GPS*)GPSObj.pData;
+
 	Camera::get()->switchTo2DDrawing();
 	int winWidthOff = (Camera::get()->getWindowWidth() - 800) * .5;
 	if(winWidthOff < 0)
@@ -150,6 +159,9 @@ void HUD::Draw()
 		DrawGauge(200+winWidthOff, 280, 210, -1, 1, vehicle->getSpeed(), "Speed");
 		glColor3f(1, 1, 0);
 		DrawGauge(600+winWidthOff, 280, 210, -40, 40, vehicle->getSteering(), "Steer");
+		glColor3f(1, 1, 1);
+		DrawGauge(400 + winWidthOff, 290, 210, 0, 0, GPSptr->northing, "Northing:");
+
 	}
 
 	Camera::get()->switchTo3DDrawing();
