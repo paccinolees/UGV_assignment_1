@@ -155,7 +155,7 @@ void HUD::drawGPSnorthing(double x, double y, double r, double northing, const c
 	glTranslatef(x, y, 0);
 	glDisable(GL_LIGHTING);
 
-	y = sin((startR)*DEGTORAD);
+	//y = sin((startR)*DEGTORAD);
 	// text label
 	//renderString(label, strlen(label) * 10 * -.25, -r1 + 20, GLUT_BITMAP_HELVETICA_10);
 	RenderString(label, strlen(label) * 10 * -.25, (r1 - 20) * y - 20, GLUT_BITMAP_HELVETICA_10);
