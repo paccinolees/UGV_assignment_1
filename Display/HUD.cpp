@@ -209,11 +209,11 @@ void HUD::drawGPSnorthing(double x, double y, double r, double northing, const c
 	glVertex2f(r1 * x2, r1 * y2);
 	glVertex2f(r2 * x2, r2 * y2);
 	glVertex2f(r2 * x1, r2 * y1);
-	glEnd();
+	glEnd();*/
 
 	// draw text value
 	sprintf(buff, "%.1f", val);
-	RenderString(buff, strlen(buff) * 18 * -.25, (r1 - 20) * y - 5, GLUT_BITMAP_HELVETICA_18);*/
+	RenderString(buff, strlen(buff) * 18 * -.25, (r1 - 20) * y - 5, GLUT_BITMAP_HELVETICA_18);
 
 	// draw border
 	glColor3f(.5, .5, .5);
