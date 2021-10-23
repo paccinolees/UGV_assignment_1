@@ -188,9 +188,9 @@ void HUD::Draw()
 		glColor3f(1, 1, 1);
 		drawGPSdata(50, 200, 0, GPSptr->northing, "Northing:");
 		glColor3f(1, 1, 1);
-		drawGPSdata(100, 200, 0, GPSptr->easting, "Easting:");
+		drawGPSdata(120, 200, 0, GPSptr->easting, "Easting:");
 		glColor3f(1, 1, 1);
-		drawGPSdata(150, 200, 0, GPSptr->height, "Height:");
+		drawGPSdata(190, 200, 0, GPSptr->height, "Height:");
 
 
 		/*glColor3f(1, 1, 1);
