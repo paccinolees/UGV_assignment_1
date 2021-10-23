@@ -1,7 +1,7 @@
 #include "VehicleControl.h"
 
 #include <iostream>
-#include <string>
+#include <iomanip>
 
 int VehicleControl::connect(String^ hostName, int portNumber) // Establish TCP connection
 {
@@ -79,8 +79,14 @@ int VehicleControl::setupSharedMemory() // Create and access shared memory objec
 
 void VehicleControl::sendCommandToUGV(unsigned int flag)
 {
-	String^ controlString = gcnew String("# " + VCptr->Steering + " " + VCptr->Speed + " " + flag + " #");
-	Console::WriteLine("Sending: '" + controlString + "'");
+	String^ controlString = gcnew String("# " + VCptr->Steering + " " + VCptr->Speed + " " + flag + " #"); 
+
+	//Prints the sent controls in 3 decimal places
+	std::cout << std::fixed;
+	std::cout << std::setprecision(3);
+	std::cout << "Steering: " << VCptr->Steering << "Speed: " << VCptr->Speed << "Flag: " << flag << std::endl;
+
+	//Sends the controlString to control the UGV
 	SendData = System::Text::Encoding::ASCII->GetBytes(controlString);
 	Stream->WriteByte(0x02);
 	Stream->Write(SendData, 0, SendData->Length);
