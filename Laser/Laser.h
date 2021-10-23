@@ -10,12 +10,12 @@ ref class Laser : public UGV_module //Laser class created by inheriting from 'UG
 public:
 	int connect(String^ hostName, int portNumber) override;
 	int setupSharedMemory() override;
-	int askForScan() override;
+	int askForScan();								// Ask server for scan										
+	int getData();									// Get data from sensor (GPS / Laser)
 	int extractData();								// added just in Laser.h
-	int getData() override;
 	bool checkArrayLength();						// added just in Laser.h
-	bool checkData() override;
-	int sendDataToSharedMemory() override;
+	bool checkData();								// Check if data is correct										//changed(to bool) by me
+	int sendDataToSharedMemory();					// Save Data in shared memory structures
 	int setShutdownFlag(bool shutdown) override;
 	int setShutdownStatus(bool shutdown) override;
 	bool getShutdownFlag() override;

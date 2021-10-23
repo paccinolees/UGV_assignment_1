@@ -14,10 +14,10 @@ ref class GPS : public UGV_module //GPS class created by inheriting from 'UGV_mo
 public:
 	int connect(String^ hostName, int portNumber) override;
 	int setupSharedMemory() override;
-	int askForScan() override;
-	int getData() override;
-	bool checkData() override;
-	int sendDataToSharedMemory() override;
+	int askForScan();								// Ask server for scan											
+	int getData();									// Get data from sensor (GPS / Laser)
+	bool checkData();								// Check if data is correct										//changed(to bool) by me
+	int sendDataToSharedMemory();					// Save Data in shared memory structures
 	bool getShutdownFlag() override;
 	int setHeartbeat(bool heartbeat) override;
 	int setShutdownFlag(bool shutdown) override;

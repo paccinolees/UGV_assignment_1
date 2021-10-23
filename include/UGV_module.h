@@ -34,10 +34,6 @@ ref class UGV_module
 public:
 	virtual int connect(String^ hostName, int portNumber) = 0;	// Establish TCP connection
 	virtual int setupSharedMemory() = 0;						// Create and access shared memory objects
-	virtual int askForScan() = 0;								// Ask server for scan											//added by me
-	virtual int getData() = 0;									// Get data from sensor (GPS / Laser)
-	virtual bool checkData() = 0;								// Check if data is correct										//changed(to bool) by me
-	virtual int sendDataToSharedMemory() = 0;					// Save Data in shared memory structures
 	virtual int setShutdownFlag(bool shutdown) = 0;				// Update shutdown signal for module							//added by me
 	virtual int setShutdownStatus(bool shutdown) = 0;			// Update shutdown status									    //added by me
 	virtual bool getShutdownFlag() = 0;							// Get Shutdown signal for module, from Process Management SM

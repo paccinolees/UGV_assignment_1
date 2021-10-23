@@ -7,6 +7,7 @@
 
 #include "smstructs.h"
 #include "SMObject.h"
+#include "VehicleControl.h"
 
 using namespace System::Threading;
 
@@ -16,39 +17,23 @@ const int max_waitCount = 100;  //2.5sec
 
 int main()
 {
-	// Instantiate SM Objects
-	SMObject PMObj(_TEXT("ProcessManagement"), sizeof(ProcessManagement));
-	SMObject VehicleControlObj(_TEXT("VehicleControl"), sizeof(SM_VehicleControl));
+	// Create a Laser object
+	VehicleControl myVCObj;
 
-	// Give access to SM objects and check if there are errors
-	PMObj.SMAccess();
-	if (PMObj.SMAccessError) {
-		std::cout << "Shared memory access of PMObj failed" << std::endl;
-		std::cout << "Press any key to exit/continue..." << std::endl;
-		getch();
-		return -2;
-	}
-	VehicleControlObj.SMAccess();
-	if (VehicleControlObj.SMAccessError) {
-		std::cout << "Shared memory access of VehicleControlObj failed" << std::endl;
-		std::cout << "Press any key to exit/continue..." << std::endl;
-		getch();
-		return -2;
-	}
-
-	// Allocate PM. pointer to pData
-	ProcessManagement* PMptr;
-	SM_VehicleControl* VehicleControlptr;
-	PMptr = (ProcessManagement*)PMObj.pData;
-	VehicleControlptr = (SM_VehicleControl*)VehicleControlObj.pData;
+	// Setup SM (Give access to SM objects and check if there are errors)
+	myVCObj.setupSharedMemory();
 
 	// Initialize shutdown status
-	PMptr->Shutdown.Flags.VehicleControl = 0;
+	myVCObj.setShutdownFlag(0);
+	// Connect to laser sensor(Authentication process)
+	myVCObj.connect("192.168.1.200", 25000);
 
-	while (!PMptr->Shutdown.Flags.VehicleControl) {
+	//-------------MAIN LOOP-------------//
+	unsigned int flagForSendCommand = 0;
+	while (!myVCObj.getShutdownFlag()) {
 		// Changes its heartbeat to 1, if PM doesn't change it back to 0, add PMCounter
-		if (PMptr->Heartbeat.Flags.VehicleControl == 0) {
-			PMptr->Heartbeat.Flags.VehicleControl = 1;
+		if (!myVCObj.getHeartbeat()) {
+			myVCObj.setHeartbeat(1);
 			PMCounter = 0;
 		}
 		else {
@@ -56,14 +41,17 @@ int main()
 
 			if (PMCounter > max_waitCount) {
 				std::cout << "PM failed, sending shutdown signal..." << std::endl;
-				PMptr->Shutdown.Status = 0xFF;
+				myVCObj.setShutdownStatus(1);
 			}
 		}
 
+		myVCObj.sendCommandToUGV(flagForSendCommand);
+		flagForSendCommand = !flagForSendCommand;
 
 		Thread::Sleep(25);
 	}
 
 	std::cout << "VehicleControl process terminating..." << std::endl;
+
 	return 0;
 }

@@ -51,10 +51,12 @@ const int max_waitCount = 100;  //2.5sec
 // Instantiate SM Objects
 SMObject PMObj(_TEXT("ProcessManagement"), sizeof(ProcessManagement));
 SMObject LaserObj(_TEXT("Laser"), sizeof(SM_Laser));
+SMObject VehicleControlObj(_TEXT("VehicleControl"), sizeof(SM_VehicleControl));
 
 // Create a pointer to SM structs
 ProcessManagement* PMptr;
 SM_Laser* Laserptr;
+SM_VehicleControl* VCptr;
 
 
 void display();
@@ -100,9 +102,17 @@ int main(int argc, char ** argv) {
 		getch();
 		return -2;
 	}
+	VehicleControlObj.SMAccess();
+	if (VehicleControlObj.SMAccessError) {
+		std::cout << "Shared memory access of VehicleControlObj failed" << std::endl;
+		std::cout << "Press any key to exit/continue..." << std::endl;
+		getch();
+		return -2;
+	}
 
 	PMptr = (ProcessManagement*)PMObj.pData;
 	Laserptr = (SM_Laser*)LaserObj.pData;
+	VCptr = (SM_VehicleControl*)VehicleControlObj.pData;
 
 	// Initialize shutdown status
 	PMptr->Shutdown.Flags.OpenGL = 0;
@@ -292,8 +302,12 @@ void idle() {
 	if (vehicle != NULL) {
 		vehicle->update(speed, steering, elapsedTime);
 	}
+	display(); // draw datas on display
 
-	display();
+	//Send data to SM
+	VCptr->Speed = vehicle->getSpeed();
+	VCptr->Steering = vehicle->getSteering();
+
 	Thread::Sleep(25);
 
 #ifdef _WIN32 
