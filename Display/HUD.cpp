@@ -144,6 +144,9 @@ void HUD::DrawGauge(double x, double y, double r, double min, double max, double
 
 void HUD::drawGPSnorthing(double x, double y, double r, double northing, const char* label)
 {
+	glTranslatef(x, y, 0);
+	glDisable(GL_LIGHTING);
+
 	double r1 = r;
 	RenderString(label, strlen(label) * 10 * -.25, (r1 - 20) * y - 20, GLUT_BITMAP_HELVETICA_10);
 	char buffer[80];
@@ -153,6 +156,9 @@ void HUD::drawGPSnorthing(double x, double y, double r, double northing, const c
 }
 void HUD::drawGPSeasting(double x, double y, double r, double easting, const char* label)
 {
+	glTranslatef(x, y, 0);
+	glDisable(GL_LIGHTING);
+
 	double r1 = r;
 	RenderString(label, strlen(label) * 10 * -.25, (r1 - 20) * y - 20, GLUT_BITMAP_HELVETICA_10);
 	char buffer[80];
@@ -162,6 +168,9 @@ void HUD::drawGPSeasting(double x, double y, double r, double easting, const cha
 }
 void HUD::drawGPSheight(double x, double y, double r, double height, const char* label)
 {
+	glTranslatef(x, y, 0);
+	glDisable(GL_LIGHTING);
+
 	double r1 = r;
 	RenderString(label, strlen(label) * 10 * -.25, (r1 - 20) * y - 20, GLUT_BITMAP_HELVETICA_10);
 	char buffer[80];
