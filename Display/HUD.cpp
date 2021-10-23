@@ -254,16 +254,6 @@ void HUD::drawGPSeasting(double x, double y, double r, double easting, const cha
 
 	RenderString(label, strlen(label) * 10 * -.25, (r1 - 20) * y - 20, GLUT_BITMAP_HELVETICA_10);
 
-	glBegin(GL_LINES);
-	for (double ang = startR; ang <= endR; ang += (endR - startR) * .125 * .5) {
-		double x = cos(ang * DEGTORAD);
-		double y = sin(ang * DEGTORAD);
-
-		glVertex2f(r1 * x, r1 * y);
-		glVertex2f(r2 * x, r2 * y);
-	}
-	glEnd();
-
 	char buffer[80];
 	// draw text value
 	sprintf(buffer, "%.3f", easting);
