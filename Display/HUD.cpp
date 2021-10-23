@@ -144,6 +144,8 @@ void HUD::DrawGauge(double x, double y, double r, double min, double max, double
 
 void HUD::drawGPSnorthing(double x, double y, double r, double northing, const char* label)
 {
+	glPushMatrix();
+
 	glTranslatef(x, y, 0);
 	glDisable(GL_LIGHTING);
 
@@ -153,9 +155,13 @@ void HUD::drawGPSnorthing(double x, double y, double r, double northing, const c
 	// draw text value
 	sprintf(buffer, "%.3f", northing);
 	RenderString(buffer, strlen(buffer) * 18 * -.25, (r1 - 20) * y - 5, GLUT_BITMAP_HELVETICA_18);
+
+	glPopMatrix();
 }
 void HUD::drawGPSeasting(double x, double y, double r, double easting, const char* label)
 {
+	glPushMatrix();
+
 	glTranslatef(x, y, 0);
 	glDisable(GL_LIGHTING);
 
@@ -165,9 +171,13 @@ void HUD::drawGPSeasting(double x, double y, double r, double easting, const cha
 	// draw text value
 	sprintf(buffer, "%.3f", easting);
 	RenderString(buffer, strlen(buffer) * 18 * -.25, (r1 - 20) * y - 5, GLUT_BITMAP_HELVETICA_18);
+
+	glPopMatrix();
 }
 void HUD::drawGPSheight(double x, double y, double r, double height, const char* label)
 {
+	glPushMatrix();
+
 	glTranslatef(x, y, 0);
 	glDisable(GL_LIGHTING);
 
@@ -177,6 +187,8 @@ void HUD::drawGPSheight(double x, double y, double r, double height, const char*
 	// draw text value
 	sprintf(buffer, "%.3f", height);
 	RenderString(buffer, strlen(buffer) * 18 * -.25, (r1 - 20) * y - 5, GLUT_BITMAP_HELVETICA_18);
+
+	glPopMatrix();
 }
 
 void HUD::Draw()
