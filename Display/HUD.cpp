@@ -150,7 +150,24 @@ void HUD::drawGPSnorthing(double x, double y, double r, double northing, const c
 	glDisable(GL_LIGHTING);
 
 	double r1 = r;
+	double r2 = r * 1.05;
+
+	const double centerR = -90;
+	const double startR = centerR - 50;
+	const double endR = centerR + 50;
+
 	RenderString(label, strlen(label) * 10 * -.25, (r1 - 20) * y - 20, GLUT_BITMAP_HELVETICA_10);
+
+	glBegin(GL_LINES);
+	for (double ang = startR; ang <= endR; ang += (endR - startR) * .125 * .5) {
+		double x = cos(ang * DEGTORAD);
+		double y = sin(ang * DEGTORAD);
+
+		glVertex2f(r1 * x, r1 * y);
+		glVertex2f(r2 * x, r2 * y);
+	}
+	glEnd();
+
 	char buffer[80];
 	// draw text value
 	sprintf(buffer, "%.3f", northing);
@@ -166,7 +183,24 @@ void HUD::drawGPSeasting(double x, double y, double r, double easting, const cha
 	glDisable(GL_LIGHTING);
 
 	double r1 = r;
+	double r2 = r * 1.05;
+
+	const double centerR = -90;
+	const double startR = centerR - 50;
+	const double endR = centerR + 50;
+
 	RenderString(label, strlen(label) * 10 * -.25, (r1 - 20) * y - 20, GLUT_BITMAP_HELVETICA_10);
+
+	glBegin(GL_LINES);
+	for (double ang = startR; ang <= endR; ang += (endR - startR) * .125 * .5) {
+		double x = cos(ang * DEGTORAD);
+		double y = sin(ang * DEGTORAD);
+
+		glVertex2f(r1 * x, r1 * y);
+		glVertex2f(r2 * x, r2 * y);
+	}
+	glEnd();
+
 	char buffer[80];
 	// draw text value
 	sprintf(buffer, "%.3f", easting);
@@ -182,7 +216,24 @@ void HUD::drawGPSheight(double x, double y, double r, double height, const char*
 	glDisable(GL_LIGHTING);
 
 	double r1 = r;
+	double r2 = r * 1.05;
+
+	const double centerR = -90;
+	const double startR = centerR - 50;
+	const double endR = centerR + 50;
+
 	RenderString(label, strlen(label) * 10 * -.25, (r1 - 20) * y - 20, GLUT_BITMAP_HELVETICA_10);
+
+	glBegin(GL_LINES);
+	for (double ang = startR; ang <= endR; ang += (endR - startR) * .125 * .5) {
+		double x = cos(ang * DEGTORAD);
+		double y = sin(ang * DEGTORAD);
+
+		glVertex2f(r1 * x, r1 * y);
+		glVertex2f(r2 * x, r2 * y);
+	}
+	glEnd();
+
 	char buffer[80];
 	// draw text value
 	sprintf(buffer, "%.3f", height);
