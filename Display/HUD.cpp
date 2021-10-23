@@ -170,9 +170,9 @@ void HUD::drawGPSnorthing(double x, double y, double r, double northing, const c
 	}
 	glEnd();*/
 
-	/*// labels
+	// labels
 	char buff[80];
-	sprintf(buff, "%.0f", min);
+	/*sprintf(buff, "%.0f", min);
 	if (minLabel)
 		strcpy(buff, minLabel);
 	RenderString(buff, (r2 + 5) * cos(startR * DEGTORAD) - 8, (r2 + 5) * sin(startR * DEGTORAD), GLUT_BITMAP_HELVETICA_12);
@@ -212,7 +212,7 @@ void HUD::drawGPSnorthing(double x, double y, double r, double northing, const c
 	glEnd();*/
 
 	// draw text value
-	sprintf(buff, "%.1f", val);
+	sprintf(buff, "%.1f", northing);
 	RenderString(buff, strlen(buff) * 18 * -.25, (r1 - 20) * y - 5, GLUT_BITMAP_HELVETICA_18);
 
 	// draw border
