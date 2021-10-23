@@ -1,5 +1,8 @@
 #include "MyVehicle.hpp"
 
+#include "smstructs.h"
+#include "SMObject.h"
+
 #ifdef __APPLE__
 	#include <OpenGL/gl.h>
 	#include <OpenGL/glu.h>
@@ -152,42 +155,32 @@ void drawUGV(double steerAngle)
 		glPopMatrix();
 	glPopMatrix();
 }
-
-MyVehicle::MyVehicle(int AmountOfRanges, double x[], double y[]) //Constructor's job is to store the laser scan's values
+MyVehicle::MyVehicle(int* AmountOfRanges, double x[], double y[]) //Constructor's job is to store the laser scan's values
 {
 	NumOfRanges = AmountOfRanges;
-	for (int i = 0; i < AmountOfRanges; i++) {
-		xRange[i] = x[i];
-		yRange[i] = y[i];
-	}
+	xRange = x;
+	yRange = y;
 }
 void MyVehicle::drawLaserScans()
 {
 	glColor3f(1, 1, 1);
 	glLineWidth(1);
-	for (int i = 0; i < NumOfRanges; i++) {
+	for (int i = 0; i < *NumOfRanges; i++) {
 		glBegin(GL_LINES);
 		glVertex3f(xRange[i] / 1000, 0, -yRange[i] / 1000);
 		glVertex3f(xRange[i] / 1000, 1, -yRange[i] / 1000);
 		glEnd();
 	}
 }
-/*void MyVehicle::updateLaserScans(int AmountOfRanges, double x[], double y[])
-{
-	NumOfRanges = AmountOfRanges;
-	for (int i = 0; i < AmountOfRanges; i++) {
-		xRange[i] = x[i];
-		yRange[i] = y[i];
-	}
-}*/
 void MyVehicle::draw()
 {
 	glPushMatrix();
 	positionInGL();
 	
+
 	drawUGV(steering);
 	drawLaserScans();
 
-	//System::Threading::Thread::Sleep(50);
+	System::Threading::Thread::Sleep(30);
 	glPopMatrix();
 }

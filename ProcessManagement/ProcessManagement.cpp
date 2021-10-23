@@ -15,7 +15,7 @@ using namespace System::Net;
 using namespace System::Text;
 using namespace System::Threading;
 
-#define NUM_UNITS 4 //no. of modules, EG. if only done GPS.exe change this to 1 etc..
+#define NUM_UNITS 5 //no. of modules, EG. if only done GPS.exe change this to 1 etc..
 
 bool IsProcessRunning(const char* processName);
 void StartProcesses();
@@ -23,7 +23,7 @@ void StartProcesses();
 //defining start up sequence
 TCHAR Units[10][20] = //
 {
-	//TEXT("Laser1.exe"),
+	TEXT("Laser1.exe"),
 	TEXT("Display.exe"),
 	TEXT("VehicleControl.exe"),
 	TEXT("GPS.exe"),
@@ -160,10 +160,10 @@ int main() {
 			std::cout << "SHUTDOWN routine activated by kbhit" << std::endl;
 		}
 
-		/*/if (LaserCounter > max_waitCount) {
+		if (LaserCounter > max_waitCount) {
 			PMptr->Shutdown.Status = 0xFF;
 			std::cout << "Laser failed...SHUTDOWN routine activated" << std::endl;
-		}*/
+		}
 		if (CameraCounter > max_waitCount) {
 			PMptr->Shutdown.Status = 0xFF;
 			std::cout << "Camera failed...SHUTDOWN routine activated" << std::endl;

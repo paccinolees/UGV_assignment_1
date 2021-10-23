@@ -38,7 +38,7 @@
 #include "Messages.hpp"
 #include "HUD.hpp"
 
-#include "SMStructs.h"
+#include "smstructs.h"
 #include "SMFcn.h"
 #include "SMObject.h"
 
@@ -139,8 +139,9 @@ int main(int argc, char ** argv) {
 	//   with the name of the class you want to show as the current 
 	//   custom vehicle.
 	// -------------------------------------------------------------------------
-	vehicle = new MyVehicle(Laserptr->AmountOfRange, Laserptr->x, Laserptr->y); // Modified the constructor so that it takes in and store the laser scans
-	
+
+	//vehicle = new MyVehicle(Laserptr->AmountOfRange, Laserptr->x, Laserptr->y); 
+	vehicle = new MyVehicle(&(Laserptr->AmountOfRange), Laserptr->x, Laserptr->y); // Modified the constructor so that it takes in and store the laser scans
 	glutMainLoop();
 
 	if (vehicle != NULL) {
@@ -172,13 +173,11 @@ void display() {
 	Camera::get()->setLookAt();
 
 	Ground::draw();
-	
+
 	// draw my vehicle
 	if (vehicle != NULL) {
 		vehicle->draw();
-		MyVehicle myvehicle(Laserptr->AmountOfRange, Laserptr->x, Laserptr->y);
 	}
-
 
 	// draw HUD
 	HUD::Draw();
@@ -292,7 +291,6 @@ void idle() {
 	// do a simulation step
 	if (vehicle != NULL) {
 		vehicle->update(speed, steering, elapsedTime);
-		
 	}
 
 	display();
