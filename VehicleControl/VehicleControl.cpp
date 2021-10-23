@@ -81,10 +81,10 @@ void VehicleControl::sendCommandToUGV(unsigned int flag)
 {
 	String^ controlString = gcnew String("# " + VCptr->Steering + " " + VCptr->Speed + " " + flag + " #"); 
 
-	//Prints the sent controls in 3 decimal places
+	//Prints the sent controls in 2 decimal places
 	std::cout << std::fixed;
-	std::cout << std::setprecision(3);
-	std::cout << "Steering: " << VCptr->Steering << "Speed: " << VCptr->Speed << "Flag: " << flag << std::endl;
+	std::cout << std::setprecision(2);
+	std::cout << "Steering: " << VCptr->Steering << "	Speed: " << VCptr->Speed << "	Flag: " << flag << std::endl;
 
 	//Sends the controlString to control the UGV
 	SendData = System::Text::Encoding::ASCII->GetBytes(controlString);
