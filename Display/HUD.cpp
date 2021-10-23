@@ -142,7 +142,7 @@ void HUD::DrawGauge(double x, double y, double r, double min, double max, double
 	glPopMatrix();
 }
 
-void HUD::drawGPSnorthing(double x, double y, double r, double northing, const char* label)
+void HUD::drawGPSdata(double x, double y, double r, double data, const char* label)
 {
 	glPushMatrix();
 	double r1 = r;
@@ -158,72 +158,15 @@ void HUD::drawGPSnorthing(double x, double y, double r, double northing, const c
 	y = sin((startR)*DEGTORAD);
 	// text label
 	//renderString(label, strlen(label) * 10 * -.25, -r1 + 20, GLUT_BITMAP_HELVETICA_10);
-	RenderString(label, strlen(label) * 10 * -.25, (r1 - 20) * y - 20, GLUT_BITMAP_HELVETICA_10);
+	RenderString(label, strlen(label) * 10 * -.25, (r1 - 20) * y - 20, GLUT_BITMAP_HELVETICA_12);
 
 	char buff[80];
 	// draw text value
-	sprintf(buff, "%.1f", northing);
-	RenderString(buff, strlen(buff) * 18 * -.25, (r1 - 20) * y - 5, GLUT_BITMAP_HELVETICA_18);
+	sprintf(buff, "%.3f", data);
+	RenderString(buff, strlen(buff) * 18 * -.25, (r1 - 20) * y - 5, GLUT_BITMAP_HELVETICA_12);
 
 	glPopMatrix();
 }
-void HUD::drawGPSeasting(double x, double y, double r, double easting, const char* label)
-{
-	glPushMatrix();
-
-	glTranslatef(x, y, 0);
-	glDisable(GL_LIGHTING);
-
-	double r1 = r;
-	double r2 = r * 1.05;
-
-	const double centerR = -90;
-	const double startR = centerR - 50;
-	const double endR = centerR + 50;
-
-	RenderString(label, strlen(label) * 10 * -.25, (r1 - 20) * y - 20, GLUT_BITMAP_HELVETICA_10);
-
-	char buffer[80];
-	// draw text value
-	sprintf(buffer, "%.3f", easting);
-	RenderString(buffer, strlen(buffer) * 18 * -.25, (r1 - 20) * y - 5, GLUT_BITMAP_HELVETICA_18);
-
-	glPopMatrix();
-}
-void HUD::drawGPSheight(double x, double y, double r, double height, const char* label)
-{
-	glPushMatrix();
-
-	glTranslatef(x, y, 0);
-	glDisable(GL_LIGHTING);
-
-	double r1 = r;
-	double r2 = r * 1.05;
-
-	const double centerR = -90;
-	const double startR = centerR - 50;
-	const double endR = centerR + 50;
-
-	RenderString(label, strlen(label) * 10 * -.25, (r1 - 20) * y - 20, GLUT_BITMAP_HELVETICA_10);
-
-	glBegin(GL_LINES);
-	for (double ang = startR; ang <= endR; ang += (endR - startR) * .125 * .5) {
-		double x = cos(ang * DEGTORAD);
-		double y = sin(ang * DEGTORAD);
-
-		glVertex2f(r1 * x, r1 * y);
-		glVertex2f(r2 * x, r2 * y);
-	}
-	glEnd();
-
-	char buffer[80];
-	// draw text value
-	sprintf(buffer, "%.3f", height);
-	RenderString(buffer, strlen(buffer) * 18 * -.25, (r1 - 20) * y - 5, GLUT_BITMAP_HELVETICA_18);
-
-	glPopMatrix();
-}
-
 void HUD::Draw()
 {
 	//accessing GPS' SM
@@ -243,11 +186,11 @@ void HUD::Draw()
 		glColor3f(1, 1, 0);
 		DrawGauge(600+winWidthOff, 280, 210, -40, 40, vehicle->getSteering(), "Steer");
 		glColor3f(1, 1, 1);
-		drawGPSnorthing(50, 200, 0, GPSptr->northing, "Northing:");
+		drawGPSdata(50, 200, 0, GPSptr->northing, "Northing:");
 		glColor3f(1, 1, 1);
-		drawGPSnorthing(100, 200, 0, GPSptr->easting, "Easting:");
+		drawGPSdata(100, 200, 0, GPSptr->easting, "Easting:");
 		glColor3f(1, 1, 1);
-		drawGPSnorthing(150, 200, 0, GPSptr->height, "Height:");
+		drawGPSdata(150, 200, 0, GPSptr->height, "Height:");
 
 
 		/*glColor3f(1, 1, 1);
