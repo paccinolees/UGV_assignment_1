@@ -144,8 +144,8 @@ void HUD::DrawGauge(double x, double y, double r, double min, double max, double
 
 void HUD::drawGPSnorthing(double x, double y, double r, double northing, const char* label)
 {
-	RenderString(label, strlen(label) * 10 * -.25, (r1 - 20) * y - 20, GLUT_BITMAP_HELVETICA_10);
 	double r1 = r;
+	RenderString(label, strlen(label) * 10 * -.25, (r1 - 20) * y - 20, GLUT_BITMAP_HELVETICA_10);
 	char buffer[80];
 	// draw text value
 	sprintf(buffer, "%.3f", northing);
@@ -154,6 +154,7 @@ void HUD::drawGPSnorthing(double x, double y, double r, double northing, const c
 void HUD::drawGPSeasting(double x, double y, double r, double easting, const char* label)
 {
 	double r1 = r;
+	RenderString(label, strlen(label) * 10 * -.25, (r1 - 20) * y - 20, GLUT_BITMAP_HELVETICA_10);
 	char buffer[80];
 	// draw text value
 	sprintf(buffer, "%.3f", easting);
@@ -162,6 +163,7 @@ void HUD::drawGPSeasting(double x, double y, double r, double easting, const cha
 void HUD::drawGPSheight(double x, double y, double r, double height, const char* label)
 {
 	double r1 = r;
+	RenderString(label, strlen(label) * 10 * -.25, (r1 - 20) * y - 20, GLUT_BITMAP_HELVETICA_10);
 	char buffer[80];
 	// draw text value
 	sprintf(buffer, "%.3f", height);
