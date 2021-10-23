@@ -82,7 +82,7 @@ void VehicleControl::sendCommandToUGV(unsigned int flag)
 	String^ controlString = gcnew String("# " + VCptr->Steering + " " + VCptr->Speed + " " + flag + " #"); 
 
 	//Prints the sent controls
-	std::fixed;
+	std::cout << std::fixed;
 	std::cout << std::setprecision(2);
 	std::cout << "Steering: " << VCptr->Steering << "     \tSpeed: " << VCptr->Speed << "    \tFlag : " << flag << std::endl;
 
