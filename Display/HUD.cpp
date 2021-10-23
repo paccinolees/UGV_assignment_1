@@ -261,19 +261,19 @@ void HUD::Draw()
 		glColor3f(1, 1, 0);
 		DrawGauge(600+winWidthOff, 280, 210, -40, 40, vehicle->getSteering(), "Steer");
 		glColor3f(1, 1, 1);
-		drawGPSnorthing(50, 200, 0, GPSptr->northing, "Northing:");
+		/*drawGPSnorthing(50, 200, 0, GPSptr->northing, "Northing:");
 		glColor3f(1, 1, 1);
 		drawGPSnorthing(100, 200, 0, GPSptr->northing, "Easting:");
 		glColor3f(1, 1, 1);
-		drawGPSnorthing(150, 200, 0, GPSptr->northing, "Height:");
+		drawGPSnorthing(150, 200, 0, GPSptr->northing, "Height:");*/
 
 
-		/*glColor3f(1, 1, 1);
+		glColor3f(1, 1, 1);
 		DrawGauge(50, 200, 0, 0, 0, GPSptr->northing, "Northing:");
 		glColor3f(1, 1, 1);
 		DrawGauge(100, 200, 0, 0, 0, GPSptr->easting, "Easting:");
 		glColor3f(1, 1, 1);
-		DrawGauge(150, 200, 0, 0, 0, GPSptr->height, "Height:");*/
+		DrawGauge(150, 200, 0, 0, 0, GPSptr->height, "Height:");
 	}
 
 	Camera::get()->switchTo3DDrawing();
