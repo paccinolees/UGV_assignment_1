@@ -158,7 +158,7 @@ void HUD::drawGPSdata(double x, double y, double r, double data, const char* lab
 	y = sin((startR)*DEGTORAD);
 	// text label
 	//renderString(label, strlen(label) * 10 * -.25, -r1 + 20, GLUT_BITMAP_HELVETICA_10);
-	RenderString(label, strlen(label) * 10 * -.25, (r1 - 20) * y - 20, GLUT_BITMAP_HELVETICA_18);
+	RenderString(label, strlen(label) * 10 * -.25, (r1 - 20) * y - 20, GLUT_BITMAP_HELVETICA_12);
 
 	char buff[80];
 	// draw text value
