@@ -142,10 +142,37 @@ void HUD::DrawGauge(double x, double y, double r, double min, double max, double
 	glPopMatrix();
 }
 
+void HUD::drawGPSnorthing(double x, double y, double r, double northing, const char* label)
+{
+	RenderString(label, strlen(label) * 10 * -.25, (r1 - 20) * y - 20, GLUT_BITMAP_HELVETICA_10);
+	double r1 = r;
+	char buffer[80];
+	// draw text value
+	sprintf(buffer, "%.3f", northing);
+	RenderString(buffer, strlen(buffer) * 18 * -.25, (r1 - 20) * y - 5, GLUT_BITMAP_HELVETICA_18);
+}
+void HUD::drawGPSeasting(double x, double y, double r, double easting, const char* label)
+{
+	double r1 = r;
+	char buffer[80];
+	// draw text value
+	sprintf(buffer, "%.3f", easting);
+	RenderString(buffer, strlen(buffer) * 18 * -.25, (r1 - 20) * y - 5, GLUT_BITMAP_HELVETICA_18);
+}
+void HUD::drawGPSheight(double x, double y, double r, double height, const char* label)
+{
+	double r1 = r;
+	char buffer[80];
+	// draw text value
+	sprintf(buffer, "%.3f", height);
+	RenderString(buffer, strlen(buffer) * 18 * -.25, (r1 - 20) * y - 5, GLUT_BITMAP_HELVETICA_18);
+}
+
 void HUD::Draw()
 {
 	//accessing GPS' SM
 	SMObject GPSObj(_TEXT("GPS"), sizeof(SM_GPS));
+	GPSObj.SMAccess();
 	SM_GPS* GPSptr;
 	GPSptr = (SM_GPS*)GPSObj.pData;
 
@@ -160,8 +187,17 @@ void HUD::Draw()
 		glColor3f(1, 1, 0);
 		DrawGauge(600+winWidthOff, 280, 210, -40, 40, vehicle->getSteering(), "Steer");
 		glColor3f(1, 1, 1);
-		DrawGauge(400 + winWidthOff, 290, 210, 0, 0, GPSptr->northing, "Northing:");
+		drawGPSnorthing(50, 200, 0, GPSptr->northing, "Northing:");
+		drawGPSnorthing(100, 200, 0, GPSptr->northing, "Easting:");
+		drawGPSnorthing(150, 200, 0, GPSptr->northing, "Height:");
 
+
+		/*glColor3f(1, 1, 1);
+		DrawGauge(50, 200, 0, 0, 0, GPSptr->northing, "Northing:");
+		glColor3f(1, 1, 1);
+		DrawGauge(100, 200, 0, 0, 0, GPSptr->easting, "Easting:");
+		glColor3f(1, 1, 1);
+		DrawGauge(150, 200, 0, 0, 0, GPSptr->height, "Height:");*/
 	}
 
 	Camera::get()->switchTo3DDrawing();
